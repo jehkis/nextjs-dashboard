@@ -102,13 +102,20 @@ async function seedRevenue() {
 }
 
 export async function GET() {
+  // Alkudatan voi ajaa vain kehitysympäristössä. Tuotannossa uusi ajo lisäisi
+  // laskut uudelleen (niiden tunnisteet arvotaan), joten reitti on suljettu.
+  if (process.env.NODE_ENV === 'production') {
+    return new Response('Not Found', { status: 404 });
+  }
+
   try {
-    const result = await sql.begin((sql) => [
-      seedUsers(),
-      seedCustomers(),
-      seedInvoices(),
-      seedRevenue(),
-    ]);
+    // Laajennus luodaan kerran ennen tauluja ja taulut täytetään peräkkäin:
+    // rinnakkain ajettuna CREATE EXTENSION voi törmätä itseensä.
+    await sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`;
+    await seedUsers();
+    await seedCustomers();
+    await seedInvoices();
+    await seedRevenue();
 
     return Response.json({ message: 'Database seeded successfully' });
   } catch (error) {
