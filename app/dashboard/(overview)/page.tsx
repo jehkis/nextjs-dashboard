@@ -1,3 +1,4 @@
+import { Metadata } from 'next';
 import CardWrapper from '@/app/ui/dashboard/cards';
 import RevenueChart from '@/app/ui/dashboard/revenue-chart';
 import LatestInvoices from '@/app/ui/dashboard/latest-invoices';
@@ -12,6 +13,10 @@ import {
 // Kojelaudan data muuttuu, joten sivu renderöidään jokaisella pyynnöllä
 // (dynaaminen renderöinti) eikä vain kerran build-vaiheessa.
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+  title: 'Dashboard',
+};
 
 export default async function Page() {
   return (
